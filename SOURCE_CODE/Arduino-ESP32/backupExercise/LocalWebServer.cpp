@@ -30,8 +30,8 @@ void setup() {
 }
 
 void loop() {
-  //postHttp();
-  //delay(1000);
+  postHttp();
+  delay(1000);
 }
 
 void postHttp() {

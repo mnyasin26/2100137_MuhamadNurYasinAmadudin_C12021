@@ -35,7 +35,7 @@ String wifiPassword = "gegerarum22";
 const IPAddress routerIp(192, 168, 100, 1);
 String googleDotCom = "www.google.com";
 
-int randBatt;
+int randTemp, randHum;
 
 void listenToSecretKnock();
 void triggerDoorUnlock();
@@ -64,8 +64,8 @@ void setup()
   Serial.println("Program start.");
 
   digitalWrite(greenLED, HIGH);
-  //connectWifi();
-  //getHttp();
+  connectWifi();
+  getHttp();
 }
 
 void loop()
@@ -175,7 +175,7 @@ boolean validateKnock()
 void triggerDoorUnlock()
 {
   Serial.println("Door unlocked!");
-  //postHttp();
+  postHttp();
   int i = 0;
 
   digitalWrite(lockMotor, HIGH);
@@ -257,7 +257,7 @@ void listenToSecretKnock()
     else
     {
       Serial.println("Secret knock failed.");
-      //postHttp();
+      postHttp();
       digitalWrite(greenLED, LOW);
       for (i = 0; i < 4; i++)
       {
@@ -287,20 +287,21 @@ void listenToSecretKnock()
   }
 }
 
-void postHttpUpdateBaterai()
+void postHttp()
 {
   Serial.println("Posting...");
-  String url = "http://192.168.100.59/esp32/api/api.php?data=update_baterai";
+  String url = "http://192.168.100.59/esp32/api/api.php?data=insert";
   HTTPClient http;
   String response;
 
   StaticJsonDocument<200> buff;
   String jsonParams;
 
-  randBatt = random(0, 100);
+  randTemp = random(30, 50);
+  randHum = random(40, 80);
 
-  buff["id"] = String(1);
-  buff["kapasistas_baterai"] = String(randBatt);
+  buff["temp"] = String(randTemp);
+  buff["hum"] = String(randHum);
 
   serializeJson(buff, jsonParams);
   // Serial.println(jsonParams);
@@ -313,44 +314,8 @@ void postHttpUpdateBaterai()
   if (statusCode == 200)
   {
     Serial.println("Post Method Success!");
-    Serial.println("Batt : " + String(randBatt));
-  }
-  else
-  {
-    Serial.println("Post Method Failed!");
-  }
-
-  // Serial.println(response);
-  // Serial.println(statusCode);
-}
-
-void postHttpUpdatePolaKunci()
-{
-  Serial.println("Posting...");
-  String url = "http://192.168.100.59/esp32/api/api.php?data=update_pola_kunci";
-  HTTPClient http;
-  String response;
-
-  StaticJsonDocument<200> buff;
-  String jsonParams;
-
-  randBatt = random(0, 100);
-
-  buff["id"] = String(1);
-  buff["kapasistas_baterai"] = String(randBatt);
-
-  serializeJson(buff, jsonParams);
-  // Serial.println(jsonParams);
-
-  http.begin(url);
-  // http.addHeader("Content-Type", "application/json");
-  int statusCode = http.POST(jsonParams);
-  response = http.getString();
-
-  if (statusCode == 200)
-  {
-    Serial.println("Post Method Success!");
-    Serial.println("Batt : " + String(randBatt));
+    Serial.println("Temp : " + String(randTemp));
+    Serial.println("Hum : " + String(randHum));
   }
   else
   {
