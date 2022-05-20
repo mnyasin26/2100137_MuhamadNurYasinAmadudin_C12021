@@ -7,21 +7,25 @@
 #include <ESP32Ping.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <time.h>
 
+
+// Storage configuration
 const int EEPROM_SIZE = 20;
 
+// Arduino I/O configuration
 const int knockSensor = 36;
 const int programSwitch = 39;
 const int lockMotor = 32;
 const int redLED = 12;
 const int greenLED = 13;
 
+// Arduino software configuration
 const int threshold = 1900;
 const int rejectValue = 25;
 const int averageRejectValue = 15;
 const int knockFadeTime = 150;
 const int lockTurnTime = 2000;
-
 const int maximumKnocks = 20;
 const int knockComplete = 1200;
 
@@ -29,22 +33,45 @@ int secretCode[maximumKnocks] = {100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 int knockReadings[maximumKnocks];
 int knockSensorValue = 0;
 int programButtonPressed = false;
-
-String wifiSSID = "KOSAN PAK MAMAN";
-String wifiPassword = "gegerarum22";
-const IPAddress routerIp(192, 168, 100, 1);
-String googleDotCom = "www.google.com";
-
-int randBatt;
+int signalPressed = 0;
 
 void listenToSecretKnock();
 void triggerDoorUnlock();
 boolean validateKnock();
 
-void connectWifi();
-void getHttp();
-void postHttp();
+// WiFi configuration
+String wifiSSID = "KOSAN PAK MAMAN";
+String wifiPassword = "gegerarum22";
+String googleDotCom = "www.google.com";
+const IPAddress routerIp(192, 168, 100, 1);
 
+int timeOut = 8000;      // milliseconds
+int tryConnect = 100000; // milliseconds
+int startTime_loop = millis();
+int now_loop = millis();
+int get_interval = 500;
+
+void connectWifi();
+void reConnectWifi();
+
+// Time configuration
+const char *ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 25200;
+const int daylightOffset_sec = 0;
+char localTime[30];
+
+void printLocalTime();
+
+// Randomizer
+int randBatt;
+
+// API configuration
+int getHttp();
+void postHttpInsertRiwayat(int stat);
+void postHttpUpdateBaterai();
+void postHttpUpdatePolaKunci();
+
+// Main Program
 void setup()
 {
   EEPROM.begin(EEPROM_SIZE);
@@ -64,16 +91,25 @@ void setup()
   Serial.println("Program start.");
 
   digitalWrite(greenLED, HIGH);
-  //connectWifi();
-  //getHttp();
+  connectWifi();
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
+  getHttp();
 }
 
 void loop()
 {
   knockSensorValue = analogRead(knockSensor);
+  //getHttp();
   // Serial.println(knockSensorValue);
+  now_loop = millis();
+  if (now_loop - startTime_loop >= get_interval){
+    signalPressed = getHttp();
+    Serial.println(signalPressed);
+    startTime_loop = millis();
+  }
 
-  if (digitalRead(programSwitch) == HIGH)
+  if (digitalRead(programSwitch) == HIGH || signalPressed == 1)
   {
     programButtonPressed = true;
     digitalWrite(redLED, HIGH);
@@ -88,8 +124,16 @@ void loop()
   {
     listenToSecretKnock();
   }
+
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    reConnectWifi();
+  }
+  //postHttpUpdateBaterai();
+  
 }
 
+// Function and Procedure Definitions
 boolean validateKnock()
 {
   int i = 0;
@@ -175,7 +219,6 @@ boolean validateKnock()
 void triggerDoorUnlock()
 {
   Serial.println("Door unlocked!");
-  //postHttp();
   int i = 0;
 
   digitalWrite(lockMotor, HIGH);
@@ -192,12 +235,13 @@ void triggerDoorUnlock()
     digitalWrite(greenLED, HIGH);
     delay(100);
   }
+  postHttpInsertRiwayat(1);
 }
 
 void listenToSecretKnock()
 {
   Serial.println("knock starting");
-  //postHttp();
+  // postHttp();
 
   int i = 0;
   for (i = 0; i < maximumKnocks; i++)
@@ -226,7 +270,7 @@ void listenToSecretKnock()
     if (knockSensorValue >= threshold)
     {
       Serial.println("knock.");
-      //postHttp();
+      // postHttp();
       now = millis();
       knockReadings[currentKnockNumber] = now - startTime;
       currentKnockNumber++;
@@ -257,7 +301,6 @@ void listenToSecretKnock()
     else
     {
       Serial.println("Secret knock failed.");
-      //postHttp();
       digitalWrite(greenLED, LOW);
       for (i = 0; i < 4; i++)
       {
@@ -267,6 +310,7 @@ void listenToSecretKnock()
         delay(100);
       }
       digitalWrite(greenLED, HIGH);
+      postHttpInsertRiwayat(0);
     }
   }
   else
@@ -287,10 +331,11 @@ void listenToSecretKnock()
   }
 }
 
-void postHttpUpdateBaterai()
+void postHttpInsertRiwayat(int stat)
 {
   Serial.println("Posting...");
-  String url = "http://192.168.100.59/esp32/api/api.php?data=update_baterai";
+  printLocalTime();
+  String url = "http://192.168.100.59/esp32-test/api/api.php?data=insert_riwayat";
   HTTPClient http;
   String response;
 
@@ -299,8 +344,53 @@ void postHttpUpdateBaterai()
 
   randBatt = random(0, 100);
 
-  buff["id"] = String(1);
-  buff["kapasistas_baterai"] = String(randBatt);
+  buff["id_perangkat"] = String(1);
+  buff["datetime"] = String(localTime);
+  if (stat == 0) {
+    buff["status"] = String(0);
+  } else {
+    buff["status"] = String(1);
+  }
+
+  serializeJson(buff, jsonParams);
+  // Serial.println(jsonParams);
+
+  http.begin(url);
+  // http.addHeader("Content-Type", "application/json");
+  //delay(4000);
+  int statusCode = http.POST(jsonParams);
+  response = http.getString();
+
+  if (statusCode == 200)
+  {
+    Serial.println("Post Method Success!");
+    Serial.println("id_perangkat : " + String(1));
+    Serial.println("datetime : " + String(localTime));
+    Serial.println("status : " + String(stat));
+  }
+  else
+  {
+    Serial.println("Post Method Failed!");
+  }
+
+  // Serial.println(response);
+  // Serial.println(statusCode);
+}
+
+void postHttpUpdateBaterai()
+{
+  Serial.println("Posting...");
+  String url = "http://192.168.100.59/esp32-test/api/api.php?data=update_baterai";
+  HTTPClient http;
+  String response;
+
+  StaticJsonDocument<200> buff;
+  String jsonParams;
+
+  randBatt = random(0, 100);
+
+  buff["id_master"] = String(1);
+  buff["kapasitas_baterai"] = String(randBatt);
 
   serializeJson(buff, jsonParams);
   // Serial.println(jsonParams);
@@ -327,7 +417,7 @@ void postHttpUpdateBaterai()
 void postHttpUpdatePolaKunci()
 {
   Serial.println("Posting...");
-  String url = "http://192.168.100.59/esp32/api/api.php?data=update_pola_kunci";
+  String url = "http://192.168.100.59/esp32-test/api/api.php?data=update_pola_kunci";
   HTTPClient http;
   String response;
 
@@ -361,9 +451,9 @@ void postHttpUpdatePolaKunci()
   // Serial.println(statusCode);
 }
 
-void getHttp()
+int getHttp()
 {
-  String url = "https://reqres.in/api/users/2";
+  String url = "http://192.168.100.59/esp32-test/api/api.php?data=get_pressed";
   HTTPClient http;
   String response;
 
@@ -380,25 +470,35 @@ void getHttp()
   String data = obj[String("data")];
   String support = obj[String("support")];
 
-  Serial.println(data);
-  Serial.println(support);
+  // Serial.println(data);
+  // Serial.println(support);
 
   StaticJsonDocument<1024> doc2;
   deserializeJson(doc2, data);
   JsonObject obj2 = doc2.as<JsonObject>();
 
-  String id = obj2[String("id")];
+  String id = obj2[String("IS_PRESSED")];
 
-  Serial.println("idnya adalah " + id);
+
+  //Serial.println("is_pressed adalah " + id);
+  return id.toInt();
 }
 
 void connectWifi()
 {
   Serial.println("Connecting to Wifi..");
   WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
+  int startTime = millis();
+  int now = millis();
   while (WiFi.status() != WL_CONNECTED)
   {
     Serial.print(".");
+    if (now - startTime >= timeOut)
+    {
+      Serial.print("Failed to connect");
+      break;
+    }
+    now = millis();
     delay(500);
   }
 
@@ -413,4 +513,26 @@ void connectWifi()
   {
     Serial.println("Connected to Internet");
   }
+}
+
+void reConnectWifi()
+{
+  if (now_loop - startTime_loop > tryConnect)
+  {
+    startTime_loop = millis();
+    connectWifi();
+  }
+  now_loop = millis();
+}
+
+void printLocalTime()
+{
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo))
+  {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  strftime(localTime, 30, "%F %T.000000", &timeinfo);
+  Serial.println(localTime);
 }
