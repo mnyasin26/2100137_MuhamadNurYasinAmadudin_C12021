@@ -8,7 +8,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <time.h>
-
+#include <math.h> // Math!
 
 // Storage configuration
 const int EEPROM_SIZE = 20;
@@ -19,9 +19,19 @@ const int programSwitch = 39;
 const int lockMotor = 32;
 const int redLED = 12;
 const int greenLED = 13;
+const int voltageInput = 35;
+
+float vin = 0.0;
+float baterai = 0.0;
+int valueVoltage = 0;
+int batteryInterval = 3000;
+
+int startTime_battery = millis();
+int now_battery = millis();
 
 // Arduino software configuration
-const int threshold = 1900;
+// const int threshold = 1900;
+const int threshold = 300;
 const int rejectValue = 25;
 const int averageRejectValue = 15;
 const int knockFadeTime = 150;
@@ -40,8 +50,8 @@ void triggerDoorUnlock();
 boolean validateKnock();
 
 // WiFi configuration
-String wifiSSID = "KOSAN PAK MAMAN";
-String wifiPassword = "gegerarum22";
+String wifiSSID = "-";
+String wifiPassword = "08080808";
 String googleDotCom = "www.google.com";
 const IPAddress routerIp(192, 168, 100, 1);
 
@@ -86,6 +96,7 @@ void setup()
   pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
   pinMode(programSwitch, INPUT);
+  pinMode(voltageInput, INPUT);
 
   Serial.begin(115200);
   Serial.println("Program start.");
@@ -99,9 +110,31 @@ void setup()
 
 void loop()
 {
+  now_battery = millis();
+  if (now_battery - startTime_battery >= batteryInterval)
+  {
+    valueVoltage = analogRead(voltageInput);
+    vin = float(valueVoltage) / 4096 * 5;
+    baterai = -96.63 * pow(vin, 3) + 999.34 * pow(vin, 2) - 3278.71 * vin + 3400.59;
+
+    if (vin < 3.4)
+    {
+      baterai = 0;
+    }
+    Serial.print("INPUT V = ");
+    Serial.print(vin, 2);
+    Serial.print(" volt");
+    Serial.print("\tBaterai = ");
+    Serial.print(baterai, 2);
+    Serial.println(" %");
+    startTime_battery = millis();
+    postHttpUpdateBaterai();
+  }
+
   knockSensorValue = analogRead(knockSensor);
-  //getHttp();
+  // getHttp();
   // Serial.println(knockSensorValue);
+
   now_loop = millis();
   if (now_loop - startTime_loop >= get_interval){
     signalPressed = getHttp();
@@ -129,7 +162,6 @@ void loop()
   {
     reConnectWifi();
   }
-  //postHttpUpdateBaterai();
   
 }
 
@@ -335,7 +367,7 @@ void postHttpInsertRiwayat(int stat)
 {
   Serial.println("Posting...");
   printLocalTime();
-  String url = "http://192.168.100.59/esp32-test/api/api.php?data=insert_riwayat";
+  String url = "http://192.168.137.236/esp32-test/api/api.php?data=insert_riwayat";
   HTTPClient http;
   String response;
 
@@ -346,9 +378,12 @@ void postHttpInsertRiwayat(int stat)
 
   buff["id_perangkat"] = String(1);
   buff["datetime"] = String(localTime);
-  if (stat == 0) {
+  if (stat == 0)
+  {
     buff["status"] = String(0);
-  } else {
+  }
+  else
+  {
     buff["status"] = String(1);
   }
 
@@ -357,7 +392,7 @@ void postHttpInsertRiwayat(int stat)
 
   http.begin(url);
   // http.addHeader("Content-Type", "application/json");
-  //delay(4000);
+  // delay(4000);
   int statusCode = http.POST(jsonParams);
   response = http.getString();
 
@@ -380,7 +415,7 @@ void postHttpInsertRiwayat(int stat)
 void postHttpUpdateBaterai()
 {
   Serial.println("Posting...");
-  String url = "http://192.168.100.59/esp32-test/api/api.php?data=update_baterai";
+  String url = "http://192.168.137.236/esp32-test/api/api.php?data=update_baterai";
   HTTPClient http;
   String response;
 
@@ -390,7 +425,7 @@ void postHttpUpdateBaterai()
   randBatt = random(0, 100);
 
   buff["id_master"] = String(1);
-  buff["kapasitas_baterai"] = String(randBatt);
+  buff["kapasitas_baterai"] = String(baterai);
 
   serializeJson(buff, jsonParams);
   // Serial.println(jsonParams);
@@ -417,7 +452,7 @@ void postHttpUpdateBaterai()
 void postHttpUpdatePolaKunci()
 {
   Serial.println("Posting...");
-  String url = "http://192.168.100.59/esp32-test/api/api.php?data=update_pola_kunci";
+  String url = "http://192.168.137.236/esp32-test/api/api.php?data=update_pola_kunci";
   HTTPClient http;
   String response;
 
@@ -453,7 +488,7 @@ void postHttpUpdatePolaKunci()
 
 int getHttp()
 {
-  String url = "http://192.168.100.59/esp32-test/api/api.php?data=get_pressed";
+  String url = "http://192.168.137.236/esp32-test/api/api.php?data=get_pressed";
   HTTPClient http;
   String response;
 
@@ -479,26 +514,35 @@ int getHttp()
 
   String id = obj2[String("IS_PRESSED")];
 
-
-  //Serial.println("is_pressed adalah " + id);
+  // Serial.println("is_pressed adalah " + id);
   return id.toInt();
 }
 
 void connectWifi()
 {
-  Serial.println("Connecting to Wifi..");
-  WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
-  int startTime = millis();
-  int now = millis();
-  while (WiFi.status() != WL_CONNECTED)
+  // Serial.println("Connecting to Wifi..");
+  // WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
+  // int startTime = millis();
+  // int now = millis();
+  // while (WiFi.status() != WL_CONNECTED)
+  // {
+  //   Serial.print(".");
+  //   if (now - startTime >= timeOut)
+  //   {
+  //     Serial.print("Failed to connect");
+  //     break;
+  //   }
+  //   now = millis();
+  //   delay(500);
+  // }
+
+  Serial.println("Smart Config Mode");
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.beginSmartConfig();
+
+  while (!WiFi.smartConfigDone())
   {
-    Serial.print(".");
-    if (now - startTime >= timeOut)
-    {
-      Serial.print("Failed to connect");
-      break;
-    }
-    now = millis();
+    Serial.print("-");
     delay(500);
   }
 

@@ -1,5 +1,5 @@
 <?php
-
+header('Content-Type: text/plain');
 error_reporting(E_ERROR | E_PARSE);
 $host = "localhost";
 $user = "root";
@@ -19,9 +19,10 @@ if ($mysqli->connect_errno) {
     exit();
 }
 
-$nama       = $_POST['nama'];
-$jurusan    = $_POST['jurusan'];
-
-$insert = mysqli_query($connect, "insert into mahasiswa set nama='$nama', jurusan='$jurusan'");
+echo "TETS";
+$isPressed = $_POST['isPressed'];
+echo $isPressed;
+$sql = 'UPDATE device_smart_knock_lock SET IS_PRESSED = "' . $isPressed . '" WHERE ID_PERANGKAT=1';
+$insert = mysqli_query($mysqli, $sql);
 
 ?>
