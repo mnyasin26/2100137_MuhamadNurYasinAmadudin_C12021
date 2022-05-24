@@ -1,17 +1,14 @@
-@font-face{
-	font-family: "Pacifico";
-	src:url('assets/font/Pacifico.tff') format('truetype');
-
-	font-family: "Fugaz One";
-	src:url('assets/font/FugazOne-Regular.tff') format('truetype');
+@font-face {
+    font-family: "Pacifico";
+    src: url('assets/font/Pacifico.tff') format('truetype');
+    font-family: "Fugaz One";
+    src: url('assets/font/FugazOne-Regular.tff') format('truetype');
 }
-
 
 * {
     text-decoration: none;
     margin: 0px;
     padding: 0px;
-    
 }
 
 body {
@@ -20,11 +17,12 @@ body {
 }
 
 .wrapper {
-    width: 1270px;
+    width: 2400px;
     margin: auto;
 }
 
 .atas a {
+    margin-left: 13px;
     font-size: 25px;
     float: left;
     font-family: courier;
@@ -48,6 +46,7 @@ nav {
     background: #4F6460;
     transition: all .5s ease;
 }
+
 .sidebar header {
     font-size: 20px;
     color: #4F6460;
@@ -55,15 +54,15 @@ nav {
     text-align: center;
     user-select: none;
     border: 1px solid;
-	border-radius: 25%;
-    width: 130px;
+    border-radius: 25px;
+    width: 150px;
     height: 25px;
-    background-color:#F8F3F3;
+    background-color: #F8F3F3;
     margin-left: 50px;
     margin-bottom: 10px;
-  }
+}
 
-.sidebar ul a{
+.sidebar ul a {
     font-family: monospace;
     display: block;
     height: 100%;
@@ -75,16 +74,18 @@ nav {
     box-sizing: border-box;
     transition: .4s;
 }
-ul li:hover a{
+
+ul li:hover a {
     padding-left: 50px;
     background-color: #495C59;
 }
-.sidebar ul a i{
+
+.sidebar ul a i {
     margin-right: 16px;
 }
 
 .downbar {
-    position:relative;
+    position: relative;
     left: 0px;
     width: 100%;
     height: 100%;
@@ -92,7 +93,7 @@ ul li:hover a{
     transition: all 0.5s ease;
 }
 
-.downbar ul a{
+.downbar ul a {
     font-family: monospace;
     display: block;
     height: 100%;
@@ -104,20 +105,21 @@ ul li:hover a{
     box-sizing: border-box;
     transition: .4s;
 }
-ul li:hover a{
+
+ul li:hover a {
     padding-left: 50px;
     background-color: #495C59;
 }
 
-.downbar ul a i{
+.downbar ul a i {
     margin-right: 10px;
 }
 
-#check{
+#check {
     display: none;
 }
 
-label #btn{
+label #btn {
     position: absolute;
     cursor: pointer;
     background-color: #4F6460;
@@ -129,37 +131,39 @@ label #btn{
     padding: 6px 12px;
 }
 
-.downbar ul li{
+.downbar ul li {
     display: none;
 }
 
-#check:checked ~ .downbar ul li{
+#check:checked~.downbar ul li {
     display: block;
     top: -250px;
 }
 
-.logo{
+.logo {
     margin-top: 30px;
     margin-left: 50%;
     width: 250px;
     margin-bottom: 70px;
 }
 
-.desc{
+.desc {
     margin-top: 20px;
     margin-left: 240px;
     font-family: monospace;
     text-align: center;
     color: #4F6460;
     font-size: 15px;
+    margin-bottom: 50px;
 }
 
-.container{
+.container {
     margin-top: 20px;
-    margin-left: 693px;
+    margin-left: 240px;
+    text-align: center;
 }
 
-.switch{
+.switch {
     position: relative;
     display: inline-block;
     width: 110px;
@@ -167,7 +171,7 @@ label #btn{
     margin: 0 10px;
 }
 
-.slider{
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -179,9 +183,11 @@ label #btn{
     border-radius: 34px;
 }
 
-.switch input {display:none}
+.switch input {
+    display: none
+}
 
-.slider:before{
+.slider:before {
     position: absolute;
     content: "";
     height: 50px;
@@ -192,105 +198,108 @@ label #btn{
     transition: 0.4s;
     border-radius: 50px;
 }
-.isimobile{
+
+.isimobile {
     text-align: center;
 }
-input:checked + .slider{
+
+input:checked+.slider {
     background-color: #4F6460;
 }
 
-input:checked + .slider:before{
+input:checked+.slider:before {
     transform: translatex(50px);
 }
 
-.doth{
+.doth {
     margin-top: 110px;
     margin-right: 20px;
     float: right;
     width: 70px;
 }
 
-@media only screen and (max-width: 767px){
-    .atas a{
+@media only screen and (max-width: 767px) {
+    .atas a {
         font-size: 25px;
-        margin-left: 90px;
+        margin-left: 60px;
     }
-	.sidebar{
-		display: none;
-	}
-    .isidesktop{
+    .sidebar {
         display: none;
     }
-    .logo{
+    .isidesktop {
+        display: none;
+    }
+    .logo {
         margin-top: 80px;
         margin-left: auto;
         width: 250px;
         margin-bottom: 30px;
     }
-    .desc{
+    .desc {
         margin-left: 2px;
         margin-right: 2px;
         font-family: monospace;
         text-align: center;
         color: #4F6460;
         font-size: 16px;
+        margin-bottom: 50px;
     }
-    .container{
+    .container {
         margin-top: 40px;
         margin-left: auto;
         margin-right: auto;
         text-align: center;
     }
-	.doth{
-		display: none;
-	}
-}
-
-@media only screen and (max-width: 991px){
-    .atas a{
-        font-size: 25px;
-        margin-left: 90px;
-    }
-	.sidebar{
-		display: none;
-	}
-    .isidesktop{
+    .doth {
         display: none;
     }
-    .logo{
+}
+
+@media only screen and (max-width: 991px) {
+    .atas a {
+        font-size: 25px;
+        margin-left: 60px;
+    }
+    .sidebar {
+        display: none;
+    }
+    .isidesktop {
+        display: none;
+    }
+    .logo {
         margin-top: 80px;
         margin-left: auto;
         width: 250px;
         margin-bottom: 30px;
     }
-    .desc{
+    .desc {
         margin-left: 2px;
         margin-right: 2px;
         font-family: monospace;
         text-align: center;
         color: #4F6460;
         font-size: 16px;
+        margin-bottom: 50px;
     }
-    .container{
+    .container {
         margin-top: 40px;
         margin-left: auto;
         margin-right: auto;
         text-align: center;
     }
-	.doth{
-		display: none;
-	}
+    .doth {
+        display: none;
+    }
 }
 
-@media only screen and (min-width: 992px){
-    .downbar{
+@media only screen and (min-width: 992px) {
+    .downbar {
         display: none;
     }
-    .isimobile{
+    .isimobile {
         display: none;
     }
-    label #btn{
+    label #btn {
         display: none;
     }
-    
 }

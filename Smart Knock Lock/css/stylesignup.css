@@ -1,128 +1,163 @@
-@font-face{
-	font-family: "Pacifico";
-	src:url('assets/font/Pacifico.tff') format('truetype');
-
-	font-family: "Fugaz One";
-	src:url('assets/font/FugazOne-Regular.tff') format('truetype');
+@font-face {
+    font-family: "Pacifico";
+    src: url('assets/font/Pacifico.tff') format('truetype');
+    font-family: "Fugaz One";
+    src: url('assets/font/FugazOne-Regular.tff') format('truetype');
 }
 
-*{	
-	text-decoration: none;
-	padding: 0;
-	margin-top: 0;
-	background-color: #4F6460;
+* {
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
+    background-color: #4F6460;
 }
 
-body{
-	color: inherit;
+body {
+    color: inherit;
 }
 
-.section{
-	float: left;
+.section {
+    float: left;
 }
 
-
-.dotp{
-	margin-top: 24%;
-	float: right;
-	padding: 20px 10px;
-	width: 77px;
-	height: 43px;
+.dotp {
+    margin-top: 24%;
+    float: right;
+    padding: 20px 10px;
+    width: 77px;
+    height: 43px;
 }
 
-.gambar{
-	float: left;
-	width: 50%;
-	height: 50%;
-	
+.gambar {
+    max-width: 800px;
+    /* height: 50%;
+    max-width: 50%;
+    width: 100%;
+    height: auto; */
 }
 
-.container{
-	float: right;
-	margin-right: 144px;
+.container {
+    display: flex;
+    /* flex: 1 1 0px; */
+    justify-content: space-between;
 }
 
-.container u{
-	font-family: "Pacifico";
-	margin-left: 47px;
-	font-size: 250%;
-	color: #F8F3F3;
-}
-.container p{
-	font-family: monospace;
-	margin-left: 5%;
-	color: #CACBCA;
+.item {
+    flex-shrink: 0;
+    flex-basis: 0;
+    flex-grow: 1;
 }
 
-div form{
-	text-align: left;
-	font-family: monospace;
-	color: #CACBCA;
-	padding: 25px 15px;
-	margin-right: 65px;
+.login {
+    display: flex;
+    justify-content: center;
+    padding-right: 40px;
 }
 
-input{
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container u {
+    font-family: "Pacifico";
+    /* margin-left: 47px; */
+    font-size: 250%;
+    color: #F8F3F3;
+}
+
+.container p {
+    font-family: monospace;
+    /* margin-left: 5%; */
+    color: #CACBCA;
+    margin-bottom: 52px;
+}
+
+div form {
+    font-family: monospace;
+    color: #CACBCA;
+    padding: 25px 15px;
+    /* margin-right: 65px; */
+}
+
+input {
     width: 99%;
-	padding: 10px 0;
-	background-color:#495C59;
-	margin-bottom: 1px;
-	color: #F8F3F3;
+    padding: 10px 0;
+    background-color: #495C59;
+    margin-bottom: 1px;
+    color: #F8F3F3;
 }
 
-button{
-	font-family: "Fugaz One";
-	margin-top: 20px;
-	width: 222px;
-	padding: 10px 10px;
-	background: #56AB60;
-	color: #F8F3F3;
-	border: 1px;
-	border-color: #56AB60;
-	cursor: pointer;
-	transition:all .38s ease-in-out;
+button {
+    font-family: "Fugaz One";
+    margin-top: 20px;
+    width: 222px;
+    padding: 10px 10px;
+    background: #56AB60;
+    color: #F8F3F3;
+    border: 1px;
+    border-color: #56AB60;
+    cursor: pointer;
+    transition: all .38s ease-in-out;
 }
 
-button:hover{
-	background-color: #F8F3F3;
-	color: #56AB60;
+button:hover {
+    background-color: #F8F3F3;
+    color: #56AB60;
 }
 
-.bawah{
-	float: right;
-	width: 14%;
+.bawah {
+    float: right;
+    width: 623px;
 }
 
-@media only screen and (max-width: 767px){
-    .logo{
-		display: none;
-	}
-	.bawah{
-		display: none;
-	}
-	.container{
-		overflow: auto;
-		margin-top: 50px;
-		margin-right: auto;
-		margin-left: auto;
-	}
-	
+@media only screen and (max-width: 600px) {
+    .logo {
+        display: none;
+    }
+    .bawah {
+        display: none;
+    }
+    .container {
+        margin-top: 50px;
+        margin-right: auto;
+        overflow: auto;
+    }
+    .form {
+        width: 100%;
+    }
 }
 
-@media only screen and (max-width: 991px){
-	.bawah{
-		display: none;
-	}
-	.container{
-		overflow: auto;
-		margin-top: 50px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-	
+@media only screen and (max-width: 850px) {
+    /* .logo {
+        display: none;
+    } */
+    .bawah {
+        display: none;
+    }
+    .gambar {
+        max-width: 500px;
+        /* height: 50%;
+    max-width: 50%;
+    width: 100%;
+    height: auto; */
+    }
+    .container {
+        display: flex;
+        /* flex: 1 1 0px; */
+        justify-content: space-between;
+        flex-direction: column;
+    }
+    .login {
+        padding-right: 0;
+    }
+    /* .container {
+        margin-top: 50px;
+        margin-right: auto;
+        overflow: auto;
+    }
+    .form {
+        width: 100%;
+    } */
 }
-
-
-
-
-
