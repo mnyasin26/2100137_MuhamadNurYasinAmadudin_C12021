@@ -1,8 +1,8 @@
 @font-face {
     font-family: "Pacifico";
-    src: url('assets/font/Pacifico.tff') format('truetype');
+    src: url('../assets/font/Pacifico.tff') format('truetype');
     font-family: "Fugaz One";
-    src: url('assets/font/FugazOne-Regular.tff') format('truetype');
+    src: url('../assets/font/FugazOne-Regular.tff') format('truetype');
 }
 
 * {

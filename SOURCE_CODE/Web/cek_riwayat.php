@@ -43,40 +43,15 @@ if (!isset($_SESSION["login"])) {
     <section class="isidesktop">
         <img src="assets/images/Logo Smart Knock Lock.png" alt="logo" class="logo">
         <div class="t-container">
-            <table class="tabel1">
-                <tr>
-                    <th>no</th>
-                    <th>tanggal dan waktu</th>
-                    <th>status</th>
-                </tr>
+            <table class="tabel1" id="displayData">
 
-                <tr>
-                    <td>1</td>
-                    <td>2022-5-14 09:15:01</td>
-                    <td>terbuka</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>2022-5-14 09:16:33</td>
-                    <td>gagal terbuka</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>2022-5-14 09:17:43</td>
-                    <td>gagal terbuka</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>2022-5-14 09:18:53</td>
-                    <td>gagal terbuka</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>2022-5-14 09:19:39</td>
-                    <td>terbuka</td>
-                </tr>
+
+
             </table>
         </div>
+
+
+
 
 
         <!-- <div class="footer">
@@ -104,42 +79,64 @@ if (!isset($_SESSION["login"])) {
 
     <section class="isimobile">
         <img src="assets/images/Logo Smart Knock Lock.png" alt="logo" class="logo">
-        <table class="tabel1">
-            <tr>
-                <th>no</th>
-                <th>tanggal dan waktu</th>
-                <th>status</th>
-            </tr>
+        <table class="tabel1" id="displayData2">
 
-            <tr>
-                <td>1</td>
-                <td>2022-5-14 09:15:01</td>
-                <td>terbuka</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>2022-5-14 09:16:33</td>
-                <td>gagal terbuka</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>2022-5-14 09:17:43</td>
-                <td>gagal terbuka</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>2022-5-14 09:18:53</td>
-                <td>gagal terbuka</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>2022-5-14 09:19:39</td>
-                <td>terbuka</td>
-            </tr>
+
+
         </table>
 
 
     </section>
 </body>
+
+<script>
+    setInterval(() => {
+        const param = {
+            id_master: "<?= $_SESSION['id_akun'] ?>"
+        };
+        console.log(JSON.stringify(param))
+
+        fetch('http://192.168.100.59/rpl/esp32/api/api.php?data=getall', {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(param),
+            })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                let html = `<tr>
+                                <th>no</th>
+                                <th>tanggal dan waktu</th>
+                                <th>status</th>
+                            </tr>`;
+                //console.log(data);
+                let counter = 0;
+                data.data.forEach(element => {
+                    counter += 1
+                    state = ``
+                    if (element.STATUS_RIWAYAT == 0) {
+                        state = `Gagal Membuka`
+                    } else {
+                        state = `Berhasil Membuka`
+                    }
+                    html += `
+                <tr>
+                    <td>${counter}</td>
+                    <td>${element.RIWAYAT_BRANKAS}</td>
+                    <td>${state}</td>
+                </tr>
+                `
+                });
+                document.getElementById('displayData').innerHTML = html;
+                document.getElementById('displayData2').innerHTML = html;
+            });
+
+
+    }, 1000);
+</script>
 
 </html>

@@ -19,6 +19,7 @@ if (!isset($_SESSION["login"])) {
     <title>Smart Knock Lock</title>
     <link rel="stylesheet" type="text/css" href="css/stylepola.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
 </head>
 
 <body>
@@ -47,10 +48,12 @@ if (!isset($_SESSION["login"])) {
         </div>
 
         <div class="container">
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider"></span>
-            </label>
+            <form method="post">
+                <label class="switch">
+                    <input type="checkbox" name="switch" class="input-switch">
+                    <span class="slider"></span>
+                </label>
+            </form>
         </div>
 
         <div class="desc">
@@ -83,10 +86,12 @@ if (!isset($_SESSION["login"])) {
         </div>
 
         <div class="container">
-            <label class="switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
+            <form method="post">
+                <label class="switch">
+                    <input type="checkbox" name="switch" class="input-switch">
+                    <span class="slider"></span>
+                </label>
+            </form>
         </div>
 
         <div class="desc">
@@ -94,6 +99,51 @@ if (!isset($_SESSION["login"])) {
             <p>jika sudah matikan kembali switch di atas</p>
         </div>
     </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
+    </script>
+
+
+    <script>
+        var obj = {};
+        obj.isPressed = 0;
+        $('.input-switch').change(function() {
+            if (this.checked) {
+                obj.isPressed = "1";
+                $test = JSON.stringify(obj)
+                console.log("Pressed!", $test);
+                $.ajax({
+                    type: 'POST',
+                    url: "./api/pola_update.php",
+                    data: {
+                        isPressed: 1,
+                        id_master: <?= $_SESSION['id_akun'] ?>,
+                    },
+                    // success: function() {
+                    //     alert('input data berhasil');
+                    // }
+                });
+            } else {
+                console.log("No Pressed!")
+                obj.isPressed = 0;
+                $.ajax({
+                    type: 'POST',
+                    url: "./api/pola_update.php",
+                    data: {
+                        isPressed: 0,
+                        id_master: <?= $_SESSION['id_akun'] ?>,
+                    },
+                    // success: function() {
+                    //     alert('input data berhasil');
+                    // }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

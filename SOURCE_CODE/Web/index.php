@@ -12,8 +12,9 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["key"])) {
 
     if ($key === hash("sha256", $row["USERNAME"])) {
         $_SESSION["login"] = true;
-        $_SESSION["user"] = $row["USERNAME"];
+        $_SESSION["user"] = $row["EMAIL"];
         $_SESSION["id_akun"] = $row["ID_MASTER"];
+        $_SESSION["nama"] = $row["USERNAME"];
     }
 }
 
@@ -36,8 +37,9 @@ if (isset($_POST["login"])) {
         $row = mysqli_fetch_assoc($result);
         if (password_verify($password, $row["PASSWORD"])) {
             $_SESSION["login"] = true;
-            $_SESSION["user"] = $row["USERNAME"];
+            $_SESSION["user"] = $row["EMAIL"];
             $_SESSION["id_akun"] = $row["ID_MASTER"];
+            $_SESSION["nama"] = $row["USERNAME"];
 
             // if (isset($_POST["remember"])) {
             //     setcookie("id", $row["id"], time() + 1800);

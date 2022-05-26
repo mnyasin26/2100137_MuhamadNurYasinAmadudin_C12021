@@ -1,8 +1,8 @@
 @font-face {
     font-family: "Pacifico";
-    src: url('assets/font/Pacifico.tff') format('truetype');
+    src: url('../assets/font/Pacifico.tff') format('truetype');
     font-family: "Fugaz One";
-    src: url('assets/font/FugazOne-Regular.tff') format('truetype');
+    src: url('../assets/font/FugazOne-Regular.tff') format('truetype');
 }
 
 * {
@@ -17,8 +17,10 @@ body {
 }
 
 .wrapper {
+    background: #4F6460;
     width: 2400px;
     margin: auto;
+    position: fixed;
 }
 
 .atas a {
@@ -44,7 +46,8 @@ nav {
     width: 250px;
     height: 100%;
     background: #4F6460;
-    transition: all .5s ease;
+    margin-top: 49px;
+    /* transition: all .5s ease; */
 }
 
 .sidebar header {
@@ -141,7 +144,7 @@ label #btn {
 }
 
 .logo {
-    margin-top: 30px;
+    margin-top: 80px;
     margin-left: 50%;
     width: 250px;
     margin-bottom: 20px;
@@ -243,6 +246,9 @@ label #btn {
     }
     .doth {
         display: none;
+    }
+    .wrapper {
+        position: relative;
     }
 }
 

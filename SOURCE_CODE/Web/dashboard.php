@@ -1,11 +1,13 @@
 <?php
 session_start();
-include './config.php';
+include('function.php');
 
 if (!isset($_SESSION["login"])) {
     header("Location: ./index.php");
     exit;
 }
+
+// $result = tampil("SELECT * ...");
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +46,7 @@ if (!isset($_SESSION["login"])) {
     <section class="isidesktop">
         <img src="assets/images/Logo Smart Knock Lock.png" alt="logo" class="logo">
         <div class="desc">
-            <p>Selamat datang [someone@example.com] di aplikasi Smart Knock Device.</p>
+            <p>Selamat datang <?= $_SESSION['user'] ?> di aplikasi Smart Knock Device.</p>
             <p>Untuk menggunakan aplikasi ini hanya perlu menekan fitur-fitur yang ada pada side bar.</p>
             <img src="assets/images/Laptop-Dashboard.png" alt="laptop" class="laptop">
         </div>
@@ -70,12 +72,15 @@ if (!isset($_SESSION["login"])) {
     <section class="isimobile">
         <img src="assets/images/Logo Smart Knock Lock.png" alt="logo" class="logo">
         <div class="desc">
-            <p>Selamat datang [someone@example.com] di aplikasi Smart Knock Device.</p>
+            <p>Selamat datang <?= $_SESSION['user'] ?> di aplikasi Smart Knock Device.</p>
             <p>Untuk menggunakan aplikasi ini hanya perlu menekan fitur-fitur yang ada pada side bar.</p>
         </div>
         <img src="assets/images/Laptop-Dashboard.png" alt="laptop" class="laptop">
         <img src="assets/images/dot-hijau.png" alt="doth" class="doth">
     </section>
+
+
+
 </body>
 
 </html>
